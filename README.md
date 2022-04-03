@@ -1,12 +1,14 @@
 # An AI guide into Afrobeats
 
 ---
-<img src="images/felipepelaquim-9c7CK4BemmA-unsplash.jpg" style=" margin: 0px; width: 100px height: 100px">
+<img src="" style=" margin: 0px; width: 100px height: 100px">
 
 ---
 
-## Problem Statement
-The popularity of afrobeats has increases tremendously as a result of social media. An increase in popularity also increased the variety in its genre. Finding the right sound for someone new to afrobeats might be challenging.
+The popularity of afrobeats has increased tremendously as a result of social media. Everyday there seems to be a new tiktok challenge being created with the latest Afrobeats song.
+Using Machine Learning, I have created a recommender system that will create an afrobeats playlist based on the songs in your spotify playlist.
+
+This recommender system helps to guide new comers into the world of afrobeat.
 
 I am attempting to create a recommendation system that will generate an Afrobeats playlist based on your favourite playlist.
 
