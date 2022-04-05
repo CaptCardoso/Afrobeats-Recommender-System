@@ -2,6 +2,7 @@ from operator import mod
 import streamlit as st
 import pickle
 
+primaryColor="#F63366"
 st.title('Afrobeats Recommendation System')
 
 
