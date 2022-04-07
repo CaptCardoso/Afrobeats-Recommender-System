@@ -1,6 +1,8 @@
 from operator import mod
 import streamlit as st
 import pickle
+import time
+
 
 st.set_page_config(
     page_title='Afrobeats Recommeder'
@@ -8,6 +10,10 @@ st.set_page_config(
 
 st.title('Afrobeats Recommendation System')
 
+
+st.sidebar.subheader('Enter Spotify playlist URL below')
+
+st.sidebar.text_input('url')
 
 # @st.cache
 # def load_model():
