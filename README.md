@@ -55,3 +55,5 @@ The [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) 
 ## References
 
 - [Spotify Dedup](https://spotify-dedup.com/): I used this web app to remove duplicates from my spotifly playlist
+- [James Okai](https://open.spotify.com/user/21rd54k5ww3pisr36mqx27duq): He has a wonderful catelogue of afrobeats music updated regularly on spotify. 
+- [Extracting Song Data From the Spotify API Using Python](https://towardsdatascience.com/extracting-song-data-from-the-spotify-api-using-python-b1e79388d50): This article was essential in helping me understand the functionality of the Spotify API. *Written by [Cameron Watts](https://cameronwwatts.medium.com/)*
