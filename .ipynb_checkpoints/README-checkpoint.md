@@ -22,26 +22,20 @@ The [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) 
 
 ---
 ## Methodology
-
----
-## Data Gathering
-
----
-## Data Cleaning
-
----
-## EDA
-
----
-## Feature Engineering
+#### Data Gathering
 
 
----
-## Modeling
+#### Data Cleaning
 
 
----
-## Charts
+#### EDA
+
+
+#### Feature Engineering
+
+#### Modeling
+
+#### Charts
 
 ---
 ## Conclusion
@@ -50,8 +44,3 @@ The [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) 
 
 ---
 ## Recommendations and Next Steps
-
----
-## References
-
-- [Spotify Dedup](https://spotify-dedup.com/): I used this web app to remove duplicates from my spotifly playlist
