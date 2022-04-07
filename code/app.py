@@ -2,7 +2,10 @@ from operator import mod
 import streamlit as st
 import pickle
 
-primaryColor="#F63366"
+st.set_page_config(
+    page_title='Afrobeats Recommeder'
+)
+
 st.title('Afrobeats Recommendation System')
 
 
