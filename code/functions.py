@@ -60,7 +60,7 @@ def get_track_info(playlist):
     
     #using a for loop, get the the info for each song and put it into the empty dictionary
     for track in tracks:
-        print('test')
+    
         #URI
         info['track_uri'].append((track["track"]["uri"]).split(':')[2])
 
@@ -102,9 +102,12 @@ def get_track_info(playlist):
  
     return info_df.join(features_df)
 
-
+#This function gets the raw data from spotify function above and tags it
 def raw_data(user_playlist_url, genre):
     user_playlist_info = get_track_info(user_playlist_url)
     #add user genre
     user_playlist_info.loc[:,'genre'] = genre
     return user_playlist_info
+
+
+#

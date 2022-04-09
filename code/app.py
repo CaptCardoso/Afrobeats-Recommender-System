@@ -9,47 +9,91 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-
+import plotly.express as px
 from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.manifold import TSNE
+from sklearn.metrics.pairwise import pairwise_distances, cosine_distances, cosine_similarity
+from sklearn.decomposition import PCA
+# <--- end of imports --->
 
+# <--- Spotify API authentications --->
 #Authentication
 client_credentials_manager = SpotifyClientCredentials(client_id = '2101cd224f5948e19c4c782d76744ed3', client_secret = '879abdfca432449facc9d8566fb40ab6')
 
 #create a spotipy object
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
+
+# <--- Page layout setup --->
 st.set_page_config(
-    page_title='Afrobeats Recommeder'
-)
+    page_title='Afrobeats Recommeder System')
 
 st.title('Afrobeats Recommendation System')
 
-
 st.sidebar.subheader('Enter Spotify playlist URL below')
 
+
+
 #enter playlist url
-playlist_url = st.sidebar.text_input('url')
+playlist_url = st.sidebar.text_input('')
 
 #Get the uri from the url
 playlist_uri = playlist_url.split("/")[-1].split("?")[0]
 
 try:
-    playlist_data = fn.raw_data(playlist_uri, 'user')
+    user_playlist = fn.raw_data(playlist_uri, 'user')
+
     #output the recommended songs
-    
-    st.write(playlist_data['track_name'])
+    #st.write(playlist_data['track_name'])
 except:
     st.write('Something went wrong')
-    print('Enter a valid playlist URL')
 
 
+#import afrobeats playlist
+afrobeats_playlist = pd.read_csv('../data/afrobeats.csv')
+
+#concat user_playlist and afrobeats_playlist
+df = pd.concat([afrobeats_playlist, user_playlist])
+df.reset_index(inplace=True, drop=True)
+
+#<-- clustering -->
+#define X     
+features = ['danceability','energy','loudness','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo']
+X = df[features]
+
+#setup pipeline for kmeans
+pipeline = Pipeline([
+                    ('scaler', StandardScaler()), 
+                    ('kmeans', KMeans(n_clusters=6))
+])
+
+#fit X 
+pipeline.fit(X)
+df['cluster'] = pipeline.predict(X)
+
+#<-- Dimensionality reduction -->
+#set up pipline for TSNE 
+#TSNE reduces it into two dimensions for good vizualization
+pipeline = Pipeline([
+            ('scaler', StandardScaler()),
+            ('tsne', TSNE(n_components=2, verbose=False))
+])
+X_tnse = pipeline.fit_transform(X)
 
 
+tsne_df = pd.DataFrame(columns=['x', 'y'], data=X_tnse)
+tsne_df['genre'] = df['genre']
+tsne_df['cluster'] = df['cluster']
+tsne_df['track_name'] = df['track_name']
 
+#<-- visialization using plotly -->
+
+fig = px.scatter(tsne_df, x='x', y='y',color='genre',color_discrete_sequence=['green','red'],hover_name='track_name')
+st.plotly_chart(fig, use_container_width=True)
 
 
 
