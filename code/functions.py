@@ -1,7 +1,24 @@
+
+from operator import mod
+import streamlit as st
+import pickle
+import time
+import functions as fn
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-import time
-import pandas as pd
+import plotly.express as px
+from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.manifold import TSNE
+from sklearn.metrics.pairwise import pairwise_distances, cosine_distances, cosine_similarity
+from sklearn.decomposition import PCA
 
 #Authentication
 client_credentials_manager = SpotifyClientCredentials(client_id = '2101cd224f5948e19c4c782d76744ed3', client_secret = '879abdfca432449facc9d8566fb40ab6')
