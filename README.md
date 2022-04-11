@@ -1,7 +1,6 @@
-# An AI guide into Afrobeats
+# Spotify Afrobeats Recommendation System
 
----
-<img src="" style=" margin: 0px; width: 100px height: 100px">
+*By Afolabi Cardoso*
 
 ---
 

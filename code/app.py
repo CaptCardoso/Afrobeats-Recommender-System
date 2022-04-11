@@ -1,5 +1,6 @@
 from operator import mod
 import streamlit as st
+import streamlit.components.v1 as components
 import pickle
 import time
 import functions as fn
@@ -90,12 +91,40 @@ tsne_df['genre'] = df['genre']
 tsne_df['cluster'] = df['cluster']
 tsne_df['track_name'] = df['track_name']
 
+#<-- Cosine Similarity -->
+similarities = cosine_similarity(X)
+recommender_df = pd.DataFrame(similarities,
+                              columns=df['track_name'],
+                             index=df['track_name']).drop(user_playlist['track_name'])
+
+top_ten_df = pd.DataFrame(columns=df.columns)
+top_ten_list = []
+    
+#Get song from users playlis
+for track in user_playlist['track_name']:    
+        
+    for count in range(len(df)): 
+        most_similar = recommender_df[track].sort_values(ascending=False).index[count]
+            
+        #check if song has already been recommended
+        if most_similar in top_ten_list:
+            continue
+            
+        else:
+            top_ten_list.append(most_similar)
+            break
+                
+    #create a dataframe of the recommended songs
+    top_ten_df = pd.concat([top_ten_df, df[df['track_name']==most_similar]])
+
 #<-- visialization using plotly -->
 
 fig = px.scatter(tsne_df, x='x', y='y',color='genre',color_discrete_sequence=['green','red'],hover_name='track_name')
 st.plotly_chart(fig, use_container_width=True)
 
-
+#<-- output the topten songs -->
+for track_uri in top_ten_df['track_uri']:
+    components.iframe("https://open.spotify.com/embed/track/"+track_uri+"?utm_source=generator")
 
 
 

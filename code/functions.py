@@ -1,4 +1,3 @@
-
 from operator import mod
 import streamlit as st
 import pickle
@@ -126,5 +125,3 @@ def raw_data(user_playlist_url, genre):
     user_playlist_info.loc[:,'genre'] = genre
     return user_playlist_info
 
-
-#
