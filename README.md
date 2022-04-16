@@ -5,14 +5,15 @@
 ---
 
 The popularity of West African music commonly called Afrobeats has increased tremendously as a result of social media. Everyday there seems to be a new tiktok challenge being created with the latest Afrobeats song.
-Using Machine Learning, I have created a recommender system that will create an Afrobeats playlist based on the songs in your spotify playlist.
+
+By using Cosine similarity and kmeans clustering, I have created a recommender system that will create an Afrobeats playlist based on the songs in the users spotify playlist.
 
 This recommender system helps to guide new comers into the world of Afrobeat.
 
 ---
 ## Contents
 
-[Brief History of Afrobeats](#Brief-History-of-Afrobeats) | [Data](#Data) | [Methodology](#Methodology) | [Feature Engineering](#Feature-Engineering) |  [EDA](#EDA) | [Modeling](#Modeling) | [Visualization](#Visualization) | [Conclusion](#Conclusion) | [Recommendations](#Recommendations) | [References](#References)
+[Brief History of Afrobeats](#Brief-History-of-Afrobeats) | [Data](#Data) | [Methodology](#Methodology) | [Feature Engineering](#Feature-Engineering) |  [EDA](#EDA) | [Modeling](#Modeling) | [Streamlit](#Streamlit) | [Conclusion](#Conclusion) | [Recommendations](#Recommendations) | [References](#References)
 
 ---
 ## Brief History of Afrobeats
@@ -40,25 +41,44 @@ Sampling is sometimes used within Afrobeats music. Burna Boy and Wizkid, for exa
 In putting together the Afrobeats playlist, I used the Spotify music streaming service. 
 I selected Afrobeats songs mainly from Ghana and Nigeria ranging from the year 2000 to 2022. The playlist has a wide range of sub-genres such as Afropop, Azonto, Afro-fusion etc. The [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) API is a music streaming service that has a well detailed API. The [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) API provides musical features that can be used for analysis, such as danceability, energy, acoustics etc. Full description of the features can be found in the [Spotify Docs](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features)
 
-To make the API call, I am using the [Spotipy](https://spotipy.readthedocs.io/en/2.19.0/) library to fetch the tracks from the [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) API.
-
 ---
 ## Methodology
 
+#### Getting the data
+
+To make the API call, I am using the [Spotipy](https://spotipy.readthedocs.io/en/2.19.0/) library to fetch the track features from the [Spotify](https://developer.spotify.com/documentation/web-api/quick-start/) API.
+
+Spotipy is a lightweight Python library for the Spotify Web API. With Spotipy you get full access to all of the music data provided by the Spotify platform.
+
+Source: [Spotipy docs](https://spotipy.readthedocs.io/en/2.19.0/)
+
+#### Featuture Engineering
+
+Not a lot of feature engineering was required because the Spoity library is very well structured.
+
+I did have to perform standard scaler on the features before performing kmeans clustering
+
+#### EDA
+
+I did a scatter plot matrix of all 10 musical features to see which features will be useful in creating clusters. I found that loudness, energy and danceability all had strong correlations. I will use these attributes in creating clusters.
+
+![plot](../images/newplot.png)
+
+The silhoutte score and elbow plot all pointed to 4 as the best number to cluster the tracks.
+
+To further analyse the features, I plotted a time series chart to see how the features has changed over the years
+
+#### Modeling
+To have a better visualization of the data, I had to apply a form of dimensionality reduction on the features. I tested out both PCA and TSNE to see which does a better job in reducting all 10 features into 2 dimensions while maintaing the clusters.
+
+TSNE does a better job. But it takes longer than PCA.
+
+After dimensionality reduction, I used Cosine similarity to create a similarity matrix. The songs with closest similarity score with the users tracks will be given as recommendations
 
 ---
-## Feature Engineering
+## Streamlit
 
----
-## EDA
-
-
----
-## Modeling
-
-
----
-## Visualization
+In order to create a more practical use of my recommendation system, I created a streamlit app. 
 
 ---
 ## Conclusion

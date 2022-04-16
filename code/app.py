@@ -38,7 +38,6 @@ st.title('Afrobeats Recommendation System')
 st.sidebar.subheader('Enter Spotify playlist URL below')
 
 
-
 #enter playlist url
 playlist_url = st.sidebar.text_input('')
 
