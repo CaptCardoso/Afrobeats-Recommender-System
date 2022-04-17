@@ -44,14 +44,14 @@ def get_track_info(playlist):
     #create an empty dictionary with the info we want to extract as columns
     info = {
     'track_uri':[],
-    'track_name':[],
-    'artist_name':[],
-    'artist_info':[],
-    'artist_uri':[],
-    'artist_popularity':[],
-    'artist_genre':[],
-    'album':[],
-    'track_pop':[],
+    #'track_name':[],
+    #'artist_name':[],
+    #'artist_info':[],
+    #'artist_uri':[],
+    #'artist_popularity':[],
+    #'artist_genre':[],
+    #'album':[],
+    #'track_pop':[],
     }
     
     features = {'danceability': [],
@@ -81,22 +81,22 @@ def get_track_info(playlist):
         info['track_uri'].append((track["track"]["uri"]).split(':')[2])
 
         #Track name
-        info['track_name'].append(track["track"]["name"])
+        #info['track_name'].append(track["track"]["name"])
 
         #Main Artist
-        info['artist_uri'].append((track["track"]["artists"][0]["uri"]).split(':')[2])
-        info['artist_info'].append(sp.artist(track["track"]["artists"][0]["uri"]))
+        #info['artist_uri'].append((track["track"]["artists"][0]["uri"]).split(':')[2])
+        #info['artist_info'].append(sp.artist(track["track"]["artists"][0]["uri"]))
 
         #Name, popularity, genre
-        info['artist_name'].append(track["track"]["artists"][0]["name"])
-        info['artist_popularity'].append(sp.artist(track["track"]["artists"][0]["uri"])["popularity"])
-        info['artist_genre'].append(sp.artist(track["track"]["artists"][0]["uri"])["genres"])
+        #info['artist_name'].append(track["track"]["artists"][0]["name"])
+        #info['artist_popularity'].append(sp.artist(track["track"]["artists"][0]["uri"])["popularity"])
+        #info['artist_genre'].append(sp.artist(track["track"]["artists"][0]["uri"])["genres"])
 
         #Album
-        info['album'].append(track["track"]["album"]["name"])
+        #info['album'].append(track["track"]["album"]["name"])
 
         #Popularity of the track
-        info['track_pop'].append(track["track"]["popularity"])
+        #info['track_pop'].append(track["track"]["popularity"])
         
         #Transform the info dictionary into a dataframe
         info_df = pd.DataFrame(info)

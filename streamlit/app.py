@@ -1,0 +1,283 @@
+from operator import mod
+import streamlit as st
+import streamlit.components.v1 as components
+import pickle
+import time
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+import plotly.express as px
+from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.manifold import TSNE
+from sklearn.metrics.pairwise import pairwise_distances, cosine_distances, cosine_similarity
+from sklearn.decomposition import PCA
+from scipy.spatial.distance import cdist
+from torch import cdist
+# <--- end of imports --->
+
+# <--- Spotify API authentications --->
+#Authentication
+client_credentials_manager = SpotifyClientCredentials(client_id = '2101cd224f5948e19c4c782d76744ed3', client_secret = '879abdfca432449facc9d8566fb40ab6')
+
+#create a spotipy object
+sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
+
+#import afrobeats playlist
+afrobeats_playlist = pd.read_csv('afrobeats_streamlit.csv')
+
+# <--- Function definitions --->
+def get_track_info(playlist):
+    
+    #split the playlist_uri is at the end of the playlists url. I'll use the .split method to extract it
+    uri = playlist.split("/")[-1].split("?")[0]
+    
+    #from the spotipy library, use the playlist_tracks() method to extract each track from the playlist uri
+    #It comes in a nested dictionary format
+    
+    results = sp.playlist_tracks(uri)
+    tracks = results['items']
+    
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+    
+    
+    #create an empty dictionary with the info we want to extract as columns
+    info = {
+    'track_uri':[],
+    'track_name':[],
+    }
+    
+    features = {'danceability': [],
+     'energy': [],
+     'key': [],
+     'loudness': [],
+     'mode': [],
+     'speechiness': [],
+     'acousticness': [],
+     'instrumentalness': [],
+     'liveness': [],
+     'valence': [],
+     'tempo': [],
+     'type': [],
+     'id': [],
+     'uri': [],
+     'track_href': [],
+     'analysis_url': [],
+     'duration_ms': [],
+     'time_signature': []
+               }
+    
+    #using a for loop, get the the info for each song and put it into the empty dictionary
+    for track in tracks:
+    
+        #URI
+        info['track_uri'].append((track["track"]["uri"]).split(':')[2])
+
+        #Track name
+        info['track_name'].append(track["track"]["name"])
+
+        info_df = pd.DataFrame(info)
+        
+        #loop through the tracks to their features and assign it to the empty dictionary
+        track_uri = track["track"]["uri"].split(':')[2] 
+        
+        try:
+            for key,value in (sp.audio_features(track_uri)[0]).items():
+                features[key].append(value)
+            
+        except:
+            print(f'failed on track {track["track"]["name"]}')
+            continue
+        #time.sleep(1)
+        
+    #Transform the features dictionary into a dataframe
+    features_df = pd.DataFrame(features)
+ 
+    return info_df.join(features_df)
+
+#This function gets the raw data from spotify function above and tags it
+def raw_data(user_playlist_url, genre):
+    user_playlist_info = get_track_info(user_playlist_url)
+    #add user genre
+    user_playlist_info.loc[:,'genre'] = genre
+    return user_playlist_info
+
+# <--- End of function definitions --->
+#set page config
+st.set_page_config(
+    page_title='Afrobeats Recommeder System')
+
+# <--- Side bar --->
+#option 1
+st.sidebar.subheader('To get Afrobeats recommendation, enter your spotify playlist URL below')
+
+#form to enter playlist url
+playlist_url = st.sidebar.text_input('')
+
+#create enter button
+recommend_button = st.sidebar.button(label='recommend tracks')
+
+#option2
+st.sidebar.subheader('You can also select from one of categories below')
+
+chill = st.sidebar.button(label='Chill')
+high_energy = st.sidebar.button(label='High Energy')
+instrumental = st.sidebar.button(label='Instrumental')
+top_ten = st.sidebar.button(label='Top Ten')
+my_recommendation = st.sidebar.button(label='My Recommendations')
+# <--- end of side bar --->
+
+# <--- main page --->
+
+st.title('Afrobeats Recommendation System')
+
+if recommend_button:
+    print('running')
+    
+    #Get the uri from the url
+    playlist_uri = playlist_url.split("/")[-1].split("?")[0]
+    user_playlist = raw_data(playlist_uri, 'user')
+
+    #concat user_playlist and afrobeats_playlist
+    df = pd.concat([afrobeats_playlist, user_playlist])
+    df.reset_index(inplace=True, drop=True)
+
+    #create features and define X     
+    features = ['danceability','energy','loudness','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo']
+    X = df[features]
+
+    #<-- clustering -->
+    #setup pipeline for kmeans
+    pipeline = Pipeline([
+                    ('scaler', StandardScaler()), 
+                    ('kmeans', KMeans(n_clusters=4))
+    ])
+
+    #fit X 
+    pipeline.fit(X)
+    df['cluster'] = pipeline.predict(X)
+
+    #<-- Dimensionality reduction -->
+    #set up pipline for TSNE 
+    #TSNE reduces it into two dimensions for good vizualization
+    # pipeline = Pipeline([
+    #     ('scaler', StandardScaler()),
+    #     ('tsne', TSNE(n_components=2, verbose=False))
+    # ])
+    # X_tnse = pipeline.fit_transform(X)
+
+    # #create a dataframe of the 2-D features
+    # tsne_df = pd.DataFrame(columns=['x', 'y'], data=X_tnse)
+    # tsne_df['genre'] = df['genre']
+    # #tsne_df['cluster'] = df['cluster']
+    # tsne_df['track_name'] = df['track_name']
+
+    #PCA
+    pipeline_pca = Pipeline([
+        ('scaler', StandardScaler()),
+        ('pca', PCA(n_components=2))
+    ])
+    pipeline_pca.fit(X)
+    #create a dataframe of the 2-D features
+    pca_df=pd.DataFrame(pipeline_pca.transform(X), columns=['x','y'])
+    pca_df['genre'] = df['genre']
+    pca_df['cluster'] = df['cluster']
+    pca_df['track_name'] = df['track_name']
+
+    #<-- Euclidean distance -->
+    dist = cdist(pca_df[['x','y']],pca_df[['x','y']])
+    recommender_df = pd.DataFrame(dist,
+                            columns=df['track_name'],
+                            index=df['track_name']).drop(user_playlist['track_name'])
+
+    #get recommendation
+    top_df = pd.DataFrame(columns=df.columns)
+    top_list = []
+
+    #Get song from users playlis
+    for track in user_playlist['track_name']:    
+    
+        for count in range(len(df)): 
+            most_similar = recommender_df[track].sort_values(ascending=True).index[count]
+        
+            #check if song has already been recommended
+            if most_similar in top_list:
+                continue
+        
+            else:
+                top_list.append(most_similar)
+                break
+
+        #create a dataframe of the recommended songs
+        top_df = pd.concat([top_df, df[df['track_name']==most_similar]])
+
+    #<-- visialization using plotly -->
+    st.caption('A ')
+    fig = px.scatter(pca_df, x='x', y='y',color='genre',color_discrete_sequence=['green','red'],hover_name='track_name')
+    st.plotly_chart(fig, use_container_width=True)
+
+    #<-- output the topten songs -->
+    for track_uri in top_df['track_uri']:
+        components.iframe("https://open.spotify.com/embed/track/"+track_uri+"?utm_source=generator")
+
+
+
+        #output the recommended songs
+        #st.write(playlist_data['track_name'])
+else:
+    st.write('Something went wrong')
+
+
+
+
+
+
+#<-- clustering -->
+#setup pipeline for kmeans
+# pipeline = Pipeline([
+#                     ('scaler', StandardScaler()), 
+#                     ('kmeans', KMeans(n_clusters=6))
+# ])
+
+# #fit X 
+# pipeline.fit(X)
+# df['cluster'] = pipeline.predict(X)
+
+    
+
+
+
+
+
+
+# @st.cache
+# def load_model():
+#   with open('models/author_pipe.pkl', 'rb') as f:
+#     the_model = pickle.load(f)
+#   return the_model
+
+# model = load_model()
+
+# st.title('Which author is your muse?')
+
+# st.subheader('Do you write like Jane Austen or Edgar Allan Poe?')
+
+# txt = st.text_area('Write your prose here').strip()
+
+# if st.button('Submit'):
+#   if len(txt) > 0:
+#     pred = model.predict([txt])[0]
+#     probs = list(model.predict_proba([txt])[0])
+#     prob = probs[0] if pred == 'Edgar Allan Poe' else probs[1]
+#     st.write('You write like ', pred)
+#     st.metric('Probability', f'{100 * round(prob, 2)}%')
+#   else:
+#     st.write('Too pithy. Try writing something.')

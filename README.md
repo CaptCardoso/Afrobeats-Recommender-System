@@ -8,7 +8,7 @@ The popularity of West African music commonly called Afrobeats has increased tre
 
 By using Cosine similarity and kmeans clustering, I have created a recommender system that will create an Afrobeats playlist based on the songs in the users spotify playlist.
 
-This recommender system helps to guide new comers into the world of Afrobeat.
+This recommender system helps to guide newcomers into the world of Afrobeat.
 
 ---
 ## Contents
@@ -71,7 +71,8 @@ To further analyse the features, I plotted a time series chart to see how the fe
 #### Modeling
 To have a better visualization of the data, I had to apply a form of dimensionality reduction on the features. I tested out both PCA and TSNE to see which does a better job in reducting all 10 features into 2 dimensions while maintaing the clusters.
 
-TSNE does a better job. But it takes longer than PCA.
+**TSNE** which stands for T-distributed Stochastic Neighbor Embedding 
+
 
 After dimensionality reduction, I used Cosine similarity to create a similarity matrix. The songs with closest similarity score with the users tracks will be given as recommendations
 
