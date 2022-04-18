@@ -1,3 +1,4 @@
+from hashlib import new
 from operator import mod
 import streamlit as st
 import streamlit.components.v1 as components
@@ -19,7 +20,6 @@ from sklearn.manifold import TSNE
 from sklearn.metrics.pairwise import pairwise_distances, cosine_distances, cosine_similarity
 from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
-from torch import cdist
 # <--- end of imports --->
 
 # <--- Spotify API authentications --->
@@ -117,22 +117,54 @@ st.set_page_config(
 
 # <--- Side bar --->
 #option 1
-st.sidebar.subheader('To get Afrobeats recommendation, enter your spotify playlist URL below')
+st.sidebar.subheader('Option 1')
 
 #form to enter playlist url
 playlist_url = st.sidebar.text_input('')
 
 #create enter button
-recommend_button = st.sidebar.button(label='recommend tracks')
+recommend_button = st.sidebar.button(label='Recommend Songs')
 
+# <--- Sliders --->
 #option2
-st.sidebar.subheader('You can also select from one of categories below')
 
-chill = st.sidebar.button(label='Chill')
-high_energy = st.sidebar.button(label='High Energy')
-instrumental = st.sidebar.button(label='Instrumental')
-top_ten = st.sidebar.button(label='Top Ten')
-my_recommendation = st.sidebar.button(label='My Recommendations')
+st.sidebar.subheader('Option 2')
+
+def slider_value():
+    danceability = st.sidebar.slider('Danceability',0.0,0.97)
+    energy = st.sidebar.slider('Energy',0.174,0.995)
+    loudness = st.sidebar.slider('Loudness',-21.272,0.995)
+    # mode = st.sidebar.slider('Mode',0.0,1.0)
+    # speechiness = st.sidebar.slider('Speechiness',0.0,0.55)
+    # acousticness = st.sidebar.slider('Acousticness',0.000294,0.976)
+    instrumentalness = 	st.sidebar.slider('Instrumentalness',0.0,0.888)
+    # liveness = st.sidebar.slider('Liveness',0.0218,0.879)
+    # valence = st.sidebar.slider('Valence',0.0,0.981)
+    tempo = st.sidebar.slider('Tempo',0.0,233.936)
+
+    res_dict = {'danceability': danceability,
+                'energy': energy,
+                #'acousticness': acousticness,
+                'instrumentalness': instrumentalness,
+               #'liveness': liveness,
+                'loudness': loudness,
+                #'speechiness': speechiness,
+                'tempo': tempo,
+                #'valence': valence
+                'track_name': 'user',
+                'genre': 'user' }
+
+    res_df = pd.DataFrame(res_dict, index=[0])
+    return res_df
+
+slider = slider_value()
+slider_button = st.sidebar.button('Recommend Song')
+
+# chill = st.sidebar.button(label='Chill')
+# high_energy = st.sidebar.button(label='High Energy')
+# instrumental = st.sidebar.button(label='Instrumental')
+# top_ten = st.sidebar.button(label='Top Ten')
+# my_recommendation = st.sidebar.button(label='My Recommendations')
 # <--- end of side bar --->
 
 # <--- main page --->
@@ -140,8 +172,7 @@ my_recommendation = st.sidebar.button(label='My Recommendations')
 st.title('Afrobeats Recommendation System')
 
 if recommend_button:
-    print('running')
-    
+        
     #Get the uri from the url
     playlist_uri = playlist_url.split("/")[-1].split("?")[0]
     user_playlist = raw_data(playlist_uri, 'user')
@@ -151,19 +182,19 @@ if recommend_button:
     df.reset_index(inplace=True, drop=True)
 
     #create features and define X     
-    features = ['danceability','energy','loudness','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo']
+    features = ['danceability','energy','loudness','instrumentalness','tempo']
     X = df[features]
 
     #<-- clustering -->
     #setup pipeline for kmeans
-    pipeline = Pipeline([
-                    ('scaler', StandardScaler()), 
-                    ('kmeans', KMeans(n_clusters=4))
-    ])
+    # pipeline = Pipeline([
+    #                 ('scaler', StandardScaler()), 
+    #                 ('kmeans', KMeans(n_clusters=4))
+    # ])
 
-    #fit X 
-    pipeline.fit(X)
-    df['cluster'] = pipeline.predict(X)
+    # #fit X 
+    # pipeline.fit(X)
+    # df['cluster'] = pipeline.predict(X)
 
     #<-- Dimensionality reduction -->
     #set up pipline for TSNE 
@@ -189,7 +220,7 @@ if recommend_button:
     #create a dataframe of the 2-D features
     pca_df=pd.DataFrame(pipeline_pca.transform(X), columns=['x','y'])
     pca_df['genre'] = df['genre']
-    pca_df['cluster'] = df['cluster']
+    #pca_df['cluster'] = df['cluster']
     pca_df['track_name'] = df['track_name']
 
     #<-- Euclidean distance -->
@@ -220,7 +251,6 @@ if recommend_button:
         top_df = pd.concat([top_df, df[df['track_name']==most_similar]])
 
     #<-- visialization using plotly -->
-    st.caption('A ')
     fig = px.scatter(pca_df, x='x', y='y',color='genre',color_discrete_sequence=['green','red'],hover_name='track_name')
     st.plotly_chart(fig, use_container_width=True)
 
@@ -232,9 +262,100 @@ if recommend_button:
 
         #output the recommended songs
         #st.write(playlist_data['track_name'])
-else:
-    st.write('Something went wrong')
+elif slider_button:
+    #concat user_playlist and afrobeats_playlist
+    df = pd.concat([afrobeats_playlist, slider])
+    df.reset_index(inplace=True, drop=True)
 
+    #create features and define X     
+    features = ['danceability','energy','loudness','instrumentalness','tempo']
+    X = df[features]
+
+    #<-- clustering -->
+    #setup pipeline for kmeans
+    # pipeline = Pipeline([
+    #                 ('scaler', StandardScaler()), 
+    #                 ('kmeans', KMeans(n_clusters=4))
+    # ])
+
+    # #fit X 
+    # pipeline.fit(X)
+    # df['cluster'] = pipeline.predict(X)
+
+    #<-- Dimensionality reduction -->
+    #set up pipline for TSNE 
+    #TSNE reduces it into two dimensions for good vizualization
+    # pipeline = Pipeline([
+    #     ('scaler', StandardScaler()),
+    #     ('tsne', TSNE(n_components=2, verbose=False))
+    # ])
+    # X_tnse = pipeline.fit_transform(X)
+
+    # #create a dataframe of the 2-D features
+    # tsne_df = pd.DataFrame(columns=['x', 'y'], data=X_tnse)
+    # tsne_df['genre'] = df['genre']
+    # #tsne_df['cluster'] = df['cluster']
+    # tsne_df['track_name'] = df['track_name']
+
+    #PCA
+    pipeline_pca = Pipeline([
+        ('scaler', StandardScaler()),
+        ('pca', PCA(n_components=2))
+    ])
+    pipeline_pca.fit(X)
+    #create a dataframe of the 2-D features
+    pca_df=pd.DataFrame(pipeline_pca.transform(X), columns=['x','y'])
+    pca_df['genre'] = df['genre']
+    #pca_df['cluster'] = df['cluster']
+    pca_df['track_name'] = df['track_name']
+
+    #<-- Euclidean distance -->
+    dist = cdist(pca_df[['x','y']],pca_df[['x','y']])
+    recommender_df = pd.DataFrame(dist,
+                            columns=df['track_name'],
+                            index=df['track_name']).drop(slider['track_name'])
+
+    #get recommendation
+    top_df = pd.DataFrame(columns=df.columns)
+    top_list = []
+
+    #Get song from users playlis
+    for track in slider['track_name']:    
+    
+        for count in range(len(df)): 
+            most_similar = recommender_df[track].sort_values(ascending=True).index[count]
+        
+            #check if song has already been recommended
+            if most_similar in top_list:
+                continue
+        
+            else:
+                top_list.append(most_similar)
+                break
+
+        #create a dataframe of the recommended songs
+        top_df = pd.concat([top_df, df[df['track_name']==most_similar]])
+
+    #<-- visialization using plotly -->
+    fig = px.scatter(pca_df, x='x', y='y',color='genre',color_discrete_sequence=['green','red'],hover_name='track_name')
+    st.plotly_chart(fig, use_container_width=True)
+
+    #<-- output the topten songs -->
+    for track_uri in top_df['track_uri']:
+        components.iframe("https://open.spotify.com/embed/track/"+track_uri+"?utm_source=generator")
+
+
+#create button
+    
+    
+
+    st.write(slider)
+
+
+else:
+    st.subheader('My recommended Afrobeat playlist')
+    components.iframe("https://open.spotify.com/embed/playlist/7aPeucRdbg7Bbt7TIGMiui", width=700, height=300)
+     
 
 
 
