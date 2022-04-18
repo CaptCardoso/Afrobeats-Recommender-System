@@ -6,7 +6,7 @@
 
 The popularity of West African music commonly called Afrobeats has increased tremendously as a result of social media. Everyday there seems to be a new tiktok challenge being created with the latest Afrobeats song.
 
-By using Cosine similarity and kmeans clustering, I have created a recommender system that will create an Afrobeats playlist based on the songs in the users spotify playlist.
+By using distance matrix and kmeans clustering, I have created a recommender system that will create an Afrobeats playlist based on the songs in the users spotify playlist.
 
 This recommender system helps to guide newcomers into the world of Afrobeat.
 
@@ -71,23 +71,32 @@ To further analyse the features, I plotted a time series chart to see how the fe
 #### Modeling
 To have a better visualization of the data, I had to apply a form of dimensionality reduction on the features. I tested out both PCA and TSNE to see which does a better job in reducting all 10 features into 2 dimensions while maintaing the clusters.
 
-**TSNE** which stands for T-distributed Stochastic Neighbor Embedding 
+**TSNE** which stands for T-distributed Stochastic Neighbor Embedding is a tool to visualize high-dimensional data. It converts similarities between data points to joint probabilities and tries to minimize the Kullback-Leibler divergence between the joint probabilities of the low-dimensional embedding and the high-dimensional data. t-SNE has a cost function that is not convex, i.e. with different initializations we can get different results.
 
+Source: [sklearn docs](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html)
 
-After dimensionality reduction, I used Cosine similarity to create a similarity matrix. The songs with closest similarity score with the users tracks will be given as recommendations
+TSNE did a great job in creating a 2D scatter plot, however it took too long to run. To improve performance for my app, I will use PCA as a dimensionality reduction tool.
 
 ---
 ## Streamlit
 
-In order to create a more practical use of my recommendation system, I created a streamlit app. 
+In order to create a more practical use of my recommendation system, I created a streamlit app.
+
+Access it here: [streamlit](https://share.streamlit.io/captcardoso/afrobeats-recommender-system/streamlit/app.py)
+
+
 
 ---
 ## Conclusion
 
-
+TSNE is a great tool for visualizing high dimensional data, however when used in an App it slows performance 
 
 ---
 ## Recommendations and Next Steps
+
+Build a more interactive app with Flask or Django
+
+Create a recommender that's flexible for all genres not only Afrobeats
 
 ---
 ## References
