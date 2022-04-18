@@ -1,2 +1,4 @@
 spotipy
 plotly
+sklearn
+scipy
