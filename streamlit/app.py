@@ -346,5 +346,5 @@ elif slider_button:
 
 else:
     st.subheader('My recommended Afrobeat playlist')
-    components.iframe("https://open.spotify.com/embed/playlist/7aPeucRdbg7Bbt7TIGMiui", width=700, height=800)
+    components.iframe("https://open.spotify.com/embed/playlist/7aPeucRdbg7Bbt7TIGMiui", width=700, height=600)
      
