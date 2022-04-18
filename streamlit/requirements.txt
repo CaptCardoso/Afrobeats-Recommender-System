@@ -2,3 +2,4 @@ spotipy
 plotly
 sklearn
 scipy
+pandas
