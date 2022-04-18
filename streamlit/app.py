@@ -116,7 +116,7 @@ st.set_page_config(
 st.sidebar.subheader('Option 1')
 
 #form to enter playlist url
-playlist_url = st.sidebar.text_input('enter playlist url')
+playlist_url = st.sidebar.text_input('Enter Playlist URL')
 
 #create enter button
 recommend_button = st.sidebar.button(label='Recommend Songs')
