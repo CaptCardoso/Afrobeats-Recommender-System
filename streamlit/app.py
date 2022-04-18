@@ -341,7 +341,7 @@ elif slider_button:
         components.iframe("https://open.spotify.com/embed/track/"+track_uri+"?utm_source=generator")
 
 
-    st.write(slider)
+    #st.write(slider)
 
 
 else:
