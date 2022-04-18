@@ -26,7 +26,7 @@ client_credentials_manager = SpotifyClientCredentials(client_id = '2101cd224f594
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
 #import afrobeats playlist
-afrobeats_playlist = pd.read_csv('afrobeats_streamlit.csv')
+afrobeats_playlist = pd.read_csv('afrobeats.csv')
 
 # <--- Function definitions --->
 def get_track_info(playlist):
