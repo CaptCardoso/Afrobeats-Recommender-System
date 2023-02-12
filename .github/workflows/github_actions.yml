@@ -15,3 +15,4 @@ jobs:
       with:
         path: 'wiki'
         #token: ${{ secrets.GITHUB_TOKEN }}
+        #test
