@@ -1,9 +1,17 @@
-- name: Update wiki
-  # You may pin to the exact commit or the version.
-  # uses: OrlovM/Wiki-Action@0a00b3232faed936e9381d2a176bc551afd3576d
-  uses: OrlovM/Wiki-Action@v1
-  with:
-    # Location of wiki directory
-    path: # default is wiki
-    # Github token
-    token: 
+name: Update Wiki
+
+on:
+  push:
+    paths:
+      - 'wiki/**'
+    branches:
+      - master
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    name: Update wiki
+    steps:
+    - uses: OrlovM/Wiki-Action@v1
+      with:
+        path: 'wiki'
+        token: ${{ secrets.GITHUB_TOKEN }}
