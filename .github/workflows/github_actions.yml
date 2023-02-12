@@ -3,7 +3,7 @@ name: Update Wiki
 on:
   push:
     paths:
-      - 'wiki'
+      - 'wiki/Home.md'
     branches:
       - master
 jobs:
