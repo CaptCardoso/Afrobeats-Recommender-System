@@ -21,4 +21,4 @@ jobs:
                 wiki_folder: wiki
                 commit_username: 'Captcardoso'
                 commit_email: 'cardosoafolabi@yahoo.com'
-                commit_message: 'action: wiki sync'
+                commit_message: 'action: wiki'
