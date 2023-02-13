@@ -1,6 +1,8 @@
 name: Wiki Sync
 on:
     push:
+        paths:
+            - 'wiki/**'
         branches:
             - master
     pull_request:
